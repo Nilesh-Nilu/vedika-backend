@@ -1,7 +1,7 @@
 import mysql, { type RowDataPacket, type ResultSetHeader } from 'mysql2/promise';
 import pool from './config/database';
 
-const MYSQL_URL = process.env.MYSQL_URL || process.env.DATABASE_URL;
+const MYSQL_URL = process.env.MYSQL_PUBLIC_URL || process.env.MYSQL_URL || process.env.DATABASE_URL;
 
 const DB_CONFIG = MYSQL_URL
   ? { uri: MYSQL_URL }

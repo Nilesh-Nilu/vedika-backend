@@ -1,6 +1,6 @@
 import mysql from 'mysql2/promise';
 
-const MYSQL_URL = process.env.MYSQL_URL || process.env.DATABASE_URL;
+const MYSQL_URL = process.env.MYSQL_PUBLIC_URL || process.env.MYSQL_URL || process.env.DATABASE_URL;
 
 const pool = MYSQL_URL
   ? mysql.createPool({ uri: MYSQL_URL, waitForConnections: true, connectionLimit: 10, queueLimit: 0 })
