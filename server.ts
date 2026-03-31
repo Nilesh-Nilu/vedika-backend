@@ -6,7 +6,7 @@ import branchRoutes from './routes/branches';
 import customerRoutes from './routes/customers';
 
 const app = express();
-const PORT = 8080;
+const PORT = parseInt(process.env.PORT || '8080');
 
 app.use(cors());
 app.use(express.json());

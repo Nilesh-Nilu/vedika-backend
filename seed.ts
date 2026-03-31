@@ -2,16 +2,30 @@ import mysql, { type RowDataPacket, type ResultSetHeader } from 'mysql2/promise'
 import pool from './config/database';
 
 const DB_CONFIG = {
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '3306'),
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306'),
+  user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
+  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
 };
 
-const DB_NAME = process.env.DB_NAME || 'vedika_customer_db';
+const DB_NAME = process.env.MYSQLDATABASE || process.env.DB_NAME || 'vedika_customer_db';
+
+async function connectWithRetry(maxRetries = 10, delayMs = 3000): Promise<mysql.Connection> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const conn = await mysql.createConnection(DB_CONFIG);
+      return conn;
+    } catch (err) {
+      if (attempt === maxRetries) throw err;
+      console.log(`MySQL not ready, retrying in ${delayMs / 1000}s... (${attempt}/${maxRetries})`);
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+  }
+  throw new Error('Failed to connect to MySQL');
+}
 
 export async function initDatabase(): Promise<void> {
-  const conn = await mysql.createConnection(DB_CONFIG);
+  const conn = await connectWithRetry();
 
   await conn.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
   await conn.query(`USE \`${DB_NAME}\``);
