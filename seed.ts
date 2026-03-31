@@ -1,12 +1,16 @@
 import mysql, { type RowDataPacket, type ResultSetHeader } from 'mysql2/promise';
 import pool from './config/database';
 
-const DB_CONFIG = {
-  host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306'),
-  user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
-  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
-};
+const MYSQL_URL = process.env.MYSQL_URL || process.env.DATABASE_URL;
+
+const DB_CONFIG = MYSQL_URL
+  ? { uri: MYSQL_URL }
+  : {
+      host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306'),
+      user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
+      password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
+    };
 
 const DB_NAME = process.env.MYSQLDATABASE || process.env.DB_NAME || 'vedika_customer_db';
 
